@@ -1,6 +1,7 @@
 package me.louisdefromont.scheduleplanner;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/schedule")
-public class SchedulePlannerController {
+public class ScheduleController {
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
     @Autowired
     private ScheduleDateRepository scheduleDateRepository;
 
@@ -31,14 +35,15 @@ public class SchedulePlannerController {
     private ToDoEventRepository toDoEventRepository;
 
     @PostMapping(path = "/generate")
-    public List<ScheduleDate> generateSchedule() {
-        LocalDate generateUntil = LocalDate.now();
+    public Schedule generateSchedule() {
+        LocalDate generateUntil = LocalDate.now().plusDays(5);
         Optional<ToDoEvent> lastToDoEvent = toDoEventRepository.findTopByOrderByDueDateTimeDesc();
-        if (lastToDoEvent.isPresent()) {
-            generateUntil = lastToDoEvent.get().getDueDateTime().toLocalDate();
-        }
-        
-        return null;
+        // if (lastToDoEvent.isPresent()) {
+        //     generateUntil = lastToDoEvent.get().getDueDateTime().toLocalDate();
+        // }
+        Schedule schedule = new Schedule(generateUntil, plannedEventRepository.findAll(), repeatableEventRepository.findAll(), toDoEventRepository.findAll());
+        scheduleRepository.save(schedule);
+        return schedule;
     }
 
     @PostMapping(path = "/addDummyData")
@@ -46,10 +51,27 @@ public class SchedulePlannerController {
         ToDoEvent toDoEvent = new ToDoEvent();
         Event event = new Event();
         event.setName("Dummy Event");
-        event.setEnergyDrain(1.0);
         toDoEvent.setEvent(event);
         toDoEvent.setDueDateTime(LocalDate.now().plusDays(1).atStartOfDay());
         toDoEvent.setEstimatedMinutes(30);
         toDoEventRepository.save(toDoEvent);
+
+        PlannedEvent plannedEvent = new PlannedEvent();
+        Event event2 = new Event();
+        event2.setName("Dummy Event 2");
+        plannedEvent.setEvent(event2);
+        plannedEvent.setStartTime(LocalDate.now().plusDays(1).atStartOfDay());
+        plannedEvent.setEndTime(LocalDate.now().plusDays(1).atStartOfDay().plusHours(1));
+        plannedEventRepository.save(plannedEvent);
+
+        RepeatableEvent repeatableEvent = new RepeatableEvent();
+        Event event3 = new Event();
+        event3.setName("Dummy Event 3");
+        repeatableEvent.setEvent(event3);
+        repeatableEvent.setStartDate(LocalDate.now().plusDays(1));
+        repeatableEvent.setStartTime(LocalTime.now());
+        repeatableEvent.setEndTime(LocalTime.now().plusHours(1));
+        repeatableEvent.setRepeatInterval(2);
+        repeatableEventRepository.save(repeatableEvent);
     }
 }
