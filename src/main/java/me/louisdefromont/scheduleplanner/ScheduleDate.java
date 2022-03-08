@@ -99,7 +99,7 @@ import javax.persistence.OneToMany;
         return timeBlocks;
     }
 
-    // TODO: Schedule between cracks
+
     public boolean scheduleEvent(Event event, int durationMinutes) {
         if (getAvailiableMinutes() < durationMinutes) {
             return false;

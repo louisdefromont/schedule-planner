@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -81,13 +82,14 @@ public class Schedule {
     }
 
     private void generate(Iterable<PlannedEvent> plannedEvents, Iterable<RepeatableEvent> repeatableEvents, Iterable<ToDoEvent> toDoEvents) {  
-            for (PlannedEvent plannedEvent : plannedEvents) {
+        for (PlannedEvent plannedEvent : plannedEvents) {
             ScheduledEvent scheduledEvent = new ScheduledEvent();
             scheduledEvent.setStartTime(plannedEvent.getStartTime());
             scheduledEvent.setEndTime(plannedEvent.getEndTime());
             scheduledEvent.setEvent(plannedEvent.getEvent());
             addToSchedule(scheduledEvent);
         }
+
         for (RepeatableEvent repeatableEvent : repeatableEvents) {
             // TODO: Set currentDate to latest between startDate and repeatableEvent.getStartDate()
             for (LocalDate currentDate = repeatableEvent.getStartDate(); currentDate.isBefore(endDate.plusDays(1)); currentDate = currentDate.plusDays(repeatableEvent.getRepeatInterval())) {
@@ -100,18 +102,24 @@ public class Schedule {
                 }
             }
         }
+
         for (ToDoEvent toDoEvent : toDoEvents) {
-            int daysUntilDueDate = (int) ChronoUnit.DAYS.between(startDate, toDoEvent.getDueDateTime().toLocalDate());
-            int minutesPerDay = toDoEvent.getEstimatedMinutes() / daysUntilDueDate;
-            for (ScheduleDate scheduleDate : scheduleDates) {
-                if (scheduleDate.getAvailiableMinutes() < minutesPerDay) {
-                    daysUntilDueDate--;
-                    minutesPerDay = toDoEvent.getEstimatedMinutes() / daysUntilDueDate;
+            int daysLeft = (int) ChronoUnit.DAYS.between(startDate, toDoEvent.getDueDateTime().toLocalDate());
+            int minutesLeft = toDoEvent.getEstimatedMinutes();
+            int minutesPerDay = (int) Math.ceil((double) minutesLeft / daysLeft);
+            int[] availiableMinutersPerDay = new int[daysLeft];
+            while (minutesLeft > 0) {
+                for (int i = 0; i < availiableMinutersPerDay.length; i++) {
+                    availiableMinutersPerDay[i] = scheduleDates.get(i).getAvailiableMinutes();
                 }
-            }
-            for (ScheduleDate scheduleDate : scheduleDates) {
-                if (scheduleDate.getAvailiableMinutes() >= minutesPerDay) {
-                    scheduleDate.scheduleEvent(toDoEvent.getEvent(), toDoEvent.getEstimatedMinutes());
+                daysLeft = Arrays.stream(availiableMinutersPerDay).filter(x -> x > 0).toArray().length;
+                minutesPerDay = (int) Math.ceil((double) minutesLeft / daysLeft);
+                for (int i = 0; i < availiableMinutersPerDay.length; i++) {
+                    if (availiableMinutersPerDay[i] > 0) {
+                        int minutesSpent = Math.min(minutesPerDay, availiableMinutersPerDay[i]);
+                        scheduleDates.get(i).scheduleEvent(toDoEvent.getEvent(), minutesSpent);
+                        minutesLeft -= minutesSpent;
+                    }
                 }
             }
         }
