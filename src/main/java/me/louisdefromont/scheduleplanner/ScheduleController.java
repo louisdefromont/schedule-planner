@@ -51,25 +51,19 @@ public class ScheduleController {
     @PostMapping(path = "/addDummyData")
     public void addDummyData() {
         ToDoEvent toDoEvent = new ToDoEvent();
-        Event event = new Event();
-        event.setName("Dummy Event");
-        toDoEvent.setEvent(event);
+        toDoEvent.setName("Dummy Event");
         toDoEvent.setDueDateTime(LocalDate.now().plusDays(1).atStartOfDay());
         toDoEvent.setEstimatedMinutes(30);
         toDoEventRepository.save(toDoEvent);
 
         PlannedEvent plannedEvent = new PlannedEvent();
-        Event event2 = new Event();
-        event2.setName("Dummy Event 2");
-        plannedEvent.setEvent(event2);
+        plannedEvent.setName("Dummy Event 2");
         plannedEvent.setStartTime(LocalDate.now().plusDays(1).atStartOfDay());
         plannedEvent.setEndTime(LocalDate.now().plusDays(1).atStartOfDay().plusHours(1));
         plannedEventRepository.save(plannedEvent);
 
         RepeatableEvent repeatableEvent = new RepeatableEvent();
-        Event event3 = new Event();
-        event3.setName("Dummy Event 3");
-        repeatableEvent.setEvent(event3);
+        repeatableEvent.setName("Dummy Event 3");
         repeatableEvent.setStartDate(LocalDate.now().plusDays(1));
         repeatableEvent.setStartTime(LocalTime.now());
         repeatableEvent.setEndTime(LocalTime.now().plusHours(1));

@@ -1,6 +1,7 @@
 package me.louisdefromont.scheduleplanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,7 @@ import me.louisdefromont.RepeatableEvent;
 import me.louisdefromont.ToDoEvent;
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/events")
 public class EventController {
     @Autowired
     private PlannedEventRepository plannedEventRepository;
@@ -22,18 +23,33 @@ public class EventController {
     @Autowired
     private ToDoEventRepository toDoEventRepository;
 
-    @PostMapping(path = "/plannedEvent")
+    @PostMapping(path = "/plannedEvents")
     public PlannedEvent newPlannedEvent(@RequestBody PlannedEvent plannedEvent) {
         return plannedEventRepository.save(plannedEvent);
     }
 
-    @PostMapping(path = "/repeatableEvent")
+    @PostMapping(path = "/repeatableEvents")
     public RepeatableEvent newRepeatableEvent(@RequestBody RepeatableEvent repeatableEvent) {
         return repeatableEventRepository.save(repeatableEvent);
     }
 
-    @PostMapping(path = "/toDoEvent")
+    @PostMapping(path = "/toDoEvents")
     public ToDoEvent newToDoEvent(@RequestBody ToDoEvent toDoEvent) {
         return toDoEventRepository.save(toDoEvent);
+    }
+
+    @GetMapping(path = "/plannedEvents")
+    public Iterable<PlannedEvent> getPlannedEvents() {
+        return plannedEventRepository.findAll();
+    }
+
+    @GetMapping(path = "/repeatableEvents")
+    public Iterable<RepeatableEvent> getRepeatableEvents() {
+        return repeatableEventRepository.findAll();
+    }
+
+    @GetMapping(path = "/toDoEvents")
+    public Iterable<ToDoEvent> getToDoEvents() {
+        return toDoEventRepository.findAll();
     }
 }
