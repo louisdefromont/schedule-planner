@@ -24,17 +24,17 @@ public class EventController {
     private ToDoEventRepository toDoEventRepository;
 
     @PostMapping(path = "/plannedEvents")
-    public PlannedEvent newPlannedEvent(@RequestBody PlannedEvent plannedEvent) {
+    public PlannedEvent savePlannedEvent(@RequestBody PlannedEvent plannedEvent) {
         return plannedEventRepository.save(plannedEvent);
     }
 
     @PostMapping(path = "/repeatableEvents")
-    public RepeatableEvent newRepeatableEvent(@RequestBody RepeatableEvent repeatableEvent) {
+    public RepeatableEvent saveRepeatableEvent(@RequestBody RepeatableEvent repeatableEvent) {
         return repeatableEventRepository.save(repeatableEvent);
     }
 
     @PostMapping(path = "/toDoEvents")
-    public ToDoEvent newToDoEvent(@RequestBody ToDoEvent toDoEvent) {
+    public ToDoEvent saveToDoEvent(@RequestBody ToDoEvent toDoEvent) {
         return toDoEventRepository.save(toDoEvent);
     }
 
