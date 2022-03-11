@@ -58,8 +58,8 @@ public class ScheduleController {
 
         PlannedEvent plannedEvent = new PlannedEvent();
         plannedEvent.setName("Dummy Event 2");
-        plannedEvent.setStartTime(LocalDate.now().plusDays(1).atStartOfDay());
-        plannedEvent.setEndTime(LocalDate.now().plusDays(1).atStartOfDay().plusHours(1));
+        plannedEvent.setStartDateTime(LocalDate.now().plusDays(1).atStartOfDay());
+        plannedEvent.setEndDateTime(LocalDate.now().plusDays(1).atStartOfDay().plusHours(1));
         plannedEventRepository.save(plannedEvent);
 
         RepeatableEvent repeatableEvent = new RepeatableEvent();
