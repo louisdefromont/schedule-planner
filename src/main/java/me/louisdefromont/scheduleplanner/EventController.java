@@ -1,6 +1,7 @@
 package me.louisdefromont.scheduleplanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,5 +52,20 @@ public class EventController {
     @GetMapping(path = "/toDoEvents")
     public Iterable<ToDoEvent> getToDoEvents() {
         return toDoEventRepository.findAll();
+    }
+
+    @DeleteMapping(path = "/plannedEvents")
+    public void deletePlannedEvent(@RequestBody PlannedEvent plannedEvent) {
+        plannedEventRepository.delete(plannedEvent);
+    }
+
+    @DeleteMapping(path = "/repeatableEvents")
+    public void deleteRepeatableEvent(@RequestBody RepeatableEvent repeatableEvent) {
+        repeatableEventRepository.delete(repeatableEvent);
+    }
+
+    @DeleteMapping(path = "/toDoEvents")
+    public void deleteToDoEvent(@RequestBody ToDoEvent toDoEvent) {
+        toDoEventRepository.delete(toDoEvent);
     }
 }
